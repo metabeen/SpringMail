@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title th:remove="all">Template for HTML email with inline image</title>
+        <title th:remove="all">Template for HTML email with PDF</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
     <body>
-            <p>Bonjour, <p/><span th:text="${name}"></span>
+            <p>Bonjour, Fen Wang<p/>
         <p>
-            Vous avez effectué une commande d'un montant de <b><span th:text="${montantCommande}"/> euros></b> sur <b>WineMania</b> le 
-            <span th:text="${#dates.format(dateCommande)}"></span>.            
+            Vous avez effectué une commande d'un montant de <b>4800 euros</b> sur <b>WineMania</b> le 
+            22/05/2017.            
         </p>
-        <p>Si vous souhaitez accéder à notre site, veuillez : <a href="http://localhost:28080/Wine-Web/index.jsf">cliquer ici</a>.
-        <p>Nos équipes font tout leur possible pour préparer votre commande : <span th:text="${idCommande}"/>.</p>
+        <p>Si vous souhaitez accéder à notre site, veuillez : <a href="http://localhost:28080/Wine-Web/index.jsf">cliquer ici</a>.</p>
+        <p>Nos équipes font tout leur possible pour préparer votre commande n°34.</p>
         
         <p>Vous serez averti par e-mail lors de l'envoi du colis par notre service de transport.<p>
         
         <fieldset>
         	<legend>Liste des articles commandés</legend>
-        	<ul th:remove="all-but-first">
-        		<li th:each="article : ${articles}"
-        		 th:text="${article}"></li>
-        	</ul>
+        		<ul>
+        			<li>Article 1</li>
+        			<li>Article 2</li>
+        			<li>Article 3</li>
+        			<li>Article 4</li>
+        		</ul>
         </fieldset>
         <p>
             <img src="../../../webapp/images/wine-ordering-banner-image2.jpg" th:src="|cid:${imageResourceName}|" />

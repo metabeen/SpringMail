@@ -69,16 +69,10 @@ public class SendingController {
 
 	//    /* Send HTML mail with attachment. */
 	@RequestMapping(value = "/sendMailWithAttachment", method = POST)
-	public String sendMailWithAttachment(
-			@RequestParam("recipientName") final String recipientName,
-			@RequestParam("recipientEmail") final String recipientEmail,
-			@RequestParam("attachment") final MultipartFile attachment,
-			final Locale locale)
+	public String sendMailWithAttachment(final Locale locale)
 					throws MessagingException, IOException {
-
-		this.emailService.sendMailWithAttachment(
-				recipientName, recipientEmail, attachment.getOriginalFilename(),
-				attachment.getBytes(), attachment.getContentType(), locale);
+		log.debug("Entrée dans la méthode POST");
+		this.emailService.sendMailWithAttachment(locale);
 		return "redirect:sent.html";
 
 	}
@@ -86,13 +80,8 @@ public class SendingController {
 	/* Send HTML mail with attachment. */
 	@RequestMapping(value = "/sendMailWithPdf", method = POST)
 	public String sendMailWithPdf(final String user,final String articles,final String order, final Locale locale) throws MessagingException, IOException {
-		//Fake data au format json pour tests
-		log.debug("*********Called method POST*********");
-		String fakeUser= "{ 'name':'cyril', 'mail':'cyril.deschamps88@gmail.com', 'adresse':'Rue de la fleur' }";
-		String fakeArticles = "[{'nom':'article1', 'prixUnitaire':'10', 'quantiteArticle':'2', 'montantArticle':'20'}, {'nom':'article2', 'prixUnitaire':'11', 'quantiteArticle':'3', 'montantArticle':'33'}]";
-		String fakeOrder = "{ 'idCommande':'1', 'montantCommande':'356' }";
-		this.emailService.sendMailWithPdf(fakeUser, fakeArticles, fakeOrder, locale);
-		log.debug("********End call method Post********");
+		log.debug("Appel de la méthode POST");
+		this.emailService.sendMailWithPdf(user, articles, order, locale);
 		return "redirect:sent.html";
 	}
 

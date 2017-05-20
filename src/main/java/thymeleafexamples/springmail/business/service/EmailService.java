@@ -54,10 +54,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import fr.afcepf.model.object.Article;
-import fr.afcepf.model.object.Order;
-import fr.afcepf.model.object.User;
-import fr.afcepf.pdf.generation.PdfGeneration;
 import thymeleafexamples.springmail.business.SpringMailConfig;
 
 @Service
@@ -75,7 +71,7 @@ public class EmailService {
 
 
 	//TODO: Modify absolute file_location to where pdf-template is generating the pdf.
-	private static final String FILE_LOCATION = "C:/Users/Metabeen/git/Projet_AL30_Projet5/pdf-template/tmp/Facture.pdf";
+	private static final String FILE_LOCATION = "C:/Users/MetabeenPcFixe/git/projet_5/pdf-template/tmp/Facture.pdf";
 
 	private static final String BACKGROUND_IMAGE = "mail/editablehtml/images/background.png";
 	private static final String LOGO_BACKGROUND_IMAGE = "mail/editablehtml/images/logo-background.png";
@@ -160,33 +156,40 @@ public class EmailService {
 	/* 
 	 * Send HTML mail with attachment. 
 	 */
-	public void sendMailWithAttachment(
-			final String recipientName, final String recipientEmail, final String attachmentFileName,
-			final byte[] attachmentBytes, final String attachmentContentType, final Locale locale)
-					throws MessagingException {
+	public void sendMailWithAttachment(final Locale locale)throws MessagingException {
 
 		// Prepare the evaluation context
 		final Context ctx = new Context(locale);
-		ctx.setVariable("name", recipientName);
-		ctx.setVariable("subscriptionDate", new Date());
-		ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
+		
 
 		// Prepare message using a Spring helper
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		final MimeMessageHelper message
 		= new MimeMessageHelper(mimeMessage, true /* multipart */, "UTF-8");
-		message.setSubject("Example HTML email with attachment");
-		message.setFrom("thymeleaf@example.com");
-		message.setTo(recipientEmail);
+		message.setSubject("Merci pour votre commande n°34 sur Winemania");
+		message.setFrom("Winemania");
+		message.setTo("cyril.deschamps88@gmail.com");
 
 		// Create the HTML body using Thymeleaf
 		final String htmlContent = this.htmlTemplateEngine.process(EMAIL_WITHATTACHMENT_TEMPLATE_NAME, ctx);
 		message.setText(htmlContent, true /* isHtml */);
-
 		// Add the attachment
-		final InputStreamSource attachmentSource = new ByteArrayResource(attachmentBytes);
+		FileInputStream pdf = null;
+		byte[] 	barPdf = null;
+		try {
+			pdf = new FileInputStream(new File(FILE_LOCATION));
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			barPdf = IOUtils.toByteArray(pdf);
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		}
+		final InputStreamSource attachmentSource = new ByteArrayResource(barPdf);
 		message.addAttachment(
-				attachmentFileName, attachmentSource, attachmentContentType);
+				"Facture.pdf", attachmentSource, "application/pdf");
 
 		// Send mail
 		this.mailSender.send(mimeMessage);
@@ -195,51 +198,14 @@ public class EmailService {
 	 * Send HTML mail with PDF attachment. 
 	 */
 	public void sendMailWithPdf(String user, String articles, String order, final Locale locale) throws MessagingException {
-		log.debug("-------------------Called Method sendMailWithPdf-------------------");
-		log.debug("-------------------Set de la variable locale to : " + locale.toString() + "-------------------");
-		//Récupération du String JSon et transformation en objet user.
-		log.debug("-------------------Début parsing Json-------------------");
-		Gson gsonUser = new Gson();
-		User userFromJson = gsonUser.fromJson(user,User.class);
-		log.debug(userFromJson.toString());
-		//Récupération du String JSon sous forme d'array et transformation en list d'articles.
-		List<Article> articlesFromJson = new ArrayList<>();
-		articlesFromJson.add(new Article("articles1", "prixUnitaire1", "quantiteArticle1", "montantArticle1"));
-		articlesFromJson.add(new Article("articles2", "prixUnitaire2", "quantiteArticle2", "montantArticle2"));
-		
-		//Test de creation d'un JSON array a partir d'un string.
-//		JsonParser JP = new JsonParser();
-//		JsonElement JE =  JP.parse(articles);
-//		JsonArray JA = JE.getAsJsonArray();
-		
-		
-		
-//		log.debug(JA);
-		//		for (Article article : articlesFromJson) {
-		//			log.debug(article.toString());
-		//		}
-		//Récupération du String Json et transformation en object order.
-		Gson gsonOrder = new Gson();
-		Order orderFromJson = gsonOrder.fromJson(order, Order.class);
-		log.debug(orderFromJson.toString());
-		log.debug("-------------------Fin parsing Json-------------------");
-		//Creation de la date de la commande
-		Date dateCommande = new Date();
-		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-		String dateCommandeString = df.format(dateCommande);
-		log.debug("Date au format string : " + dateCommandeString);
-		//Appel de la méthode pour la génération du PDF
-		log.debug("-------------------Début de la génération du pdf-------------------");
-		PdfGeneration genPdf = new PdfGeneration();
-		genPdf.generatePdf(userFromJson, articlesFromJson, orderFromJson,dateCommandeString);
-		log.debug("-------------------Génération du pdf terminée-------------------");
-		// Prepare the evaluation context
+
+
 		final Context ctx = new Context(locale);
-		ctx.setVariable("name", userFromJson.getName() );
+		ctx.setVariable("name", "Fen Wang");
 		ctx.setVariable("dateCommande", new Date());
-		ctx.setVariable("idCommande", orderFromJson.getIdCommande());
-		ctx.setVariable("montantCommande", orderFromJson.getMontantCommande());
-		
+		ctx.setVariable("idCommande", "34");
+		ctx.setVariable("montantCommande", "4800");
+
 		List<String> articlesForMail = new ArrayList<>();
 		articlesForMail.add("article1");
 		articlesForMail.add("article2");
@@ -249,9 +215,9 @@ public class EmailService {
 		final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 		final MimeMessageHelper message
 		= new MimeMessageHelper(mimeMessage, true /* multipart */, "UTF-8");
-		message.setSubject("Votre commande n°"+ orderFromJson.getIdCommande() +" sur WineMania a bien été prise en compte!");
+		message.setSubject("Votre commande n°34 sur WineMania a bien été prise en compte!");
 		message.setFrom("WineMania");
-		message.setTo(userFromJson.getMail());
+		message.setTo("cyril.deschamps88@gmail.com");
 
 		// Create the HTML body using Thymeleaf
 		final String htmlContent = this.htmlTemplateEngine.process(EMAIL_WITHPDF_TEMPLATE_NAME, ctx);
